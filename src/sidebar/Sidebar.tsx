@@ -6,35 +6,35 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
+import ChatIcon from '@mui/icons-material/Chat';
+import type {ChatPreview} from "../assets/Props.tsx";
 
 type Sidebar = {
-    chats: ChatMetadata[];
+    chats: ChatPreview[];
     currentChatId: number;
     setCurrentChatId: React.Dispatch<React.SetStateAction<number>>;
+    changeChat: (chatId: number) => void;
 };
-
-type ChatMetadata = {
-    id: number;
-    name: string;
-    createdAt: Date;
-}
 
 
 function Sidebar(sidebar: Sidebar) {
+
+    function handleChatClick(chatId: number) {
+        sidebar.setCurrentChatId(chatId);
+        sidebar.changeChat(chatId);
+    }
 
     return (
         <Box>
             <Toolbar />
             <Box sx={{ overflow: 'auto' }}>
                 <List>
-                    {sidebar.chats.map((metadata, index) => (
-                        <ListItem key={metadata.id} disablePadding>
-                            <ListItemButton selected={sidebar.currentChatId === metadata.id}
-                                            onClick={() => sidebar.setCurrentChatId(metadata.id)}>
+                    {sidebar.chats.map((metadata) => (
+                        <ListItem key={metadata.chatId} disablePadding>
+                            <ListItemButton selected={sidebar.currentChatId === metadata.chatId}
+                                            onClick={() => handleChatClick(metadata.chatId)}>
                                 <ListItemIcon>
-                                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                                    <ChatIcon />
                                 </ListItemIcon>
                                 <ListItemText primary={metadata.name} />
                             </ListItemButton>

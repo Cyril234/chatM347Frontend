@@ -27,3 +27,8 @@ export type MessageProps = {
     senderName: string;
     timestamp: Date;
 };
+
+export type ChatPreview = {
+    chatId: number;
+    name: string;
+}
