@@ -1,8 +1,5 @@
 export async function post(url: string, body: unknown, auth: boolean) {
 
-    console.log("****************api.ts****************");
-    console.log(body)
-
     try {
         let response: Response;
         if (auth) {
@@ -29,14 +26,14 @@ export async function post(url: string, body: unknown, auth: boolean) {
         }
 
         if (!response.ok) {
-            throw new Error(`HTTP-Fehler: ${response.status}`);
+            throw new Error(`HTTP-Error: ${response.status}`);
         }
 
         const data = await response.json();
-        console.log("Antwort:", data);
+        console.log("answer:", data);
         return data;
     } catch (error) {
-        console.error("Fehler beim Senden:", error);
+        console.error("Error sending:", error);
     }
 }
 
@@ -45,15 +42,11 @@ export async function get(url: string, auth: boolean) {
         let response: Response;
 
         if (auth) {
-            console.log("auth true");
-
             response = await fetch(url, {
                 method: "GET",
                 credentials: "include",
             });
         } else {
-            console.log("auth false");
-
             response = await fetch(url, {
                 method: "GET",
                 credentials: "include",
@@ -62,20 +55,17 @@ export async function get(url: string, auth: boolean) {
 
         const text = await response.text();
 
-        console.log("Status:", response.status);
-        console.log("Raw response:", text);
-
         if (!response.ok) {
-            throw new Error(`HTTP-Fehler: ${response.status}: ${text}`);
+            throw new Error(`HTTP-Error: ${response.status}: ${text}`);
         }
 
         const json = JSON.parse(text);
 
-        console.log("Antwort:", json);
+        console.log("answer:", json);
 
         return json;
     } catch (error) {
-        console.error("Fehler beim Senden:", error);
+        console.error("Error sending:", error);
         throw error;
     }
 }

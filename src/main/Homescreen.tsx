@@ -85,7 +85,6 @@ export default function Homescreen() {
 
     async function sendMessage(message:string){
         setCurrentChat( await post(`http://localhost:8080/chat/sendMessage`, {"chatId": currentChat.chatId, "text": message}, true));
-        console.log(currentChat);
     }
 
     async function changeChat(chatId:number){
