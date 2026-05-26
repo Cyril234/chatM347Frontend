@@ -20,6 +20,7 @@ export async function post(url: string, body: unknown, auth: boolean) {
 
             response = await fetch(url, {
                 method: "POST",
+                credentials: "include",
                 headers: {
                     "Content-Type": "application/json",
                 },
@@ -55,6 +56,7 @@ export async function get(url: string, auth: boolean) {
 
             response = await fetch(url, {
                 method: "GET",
+                credentials: "include",
             });
         }
 

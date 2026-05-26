@@ -20,17 +20,28 @@ export type ChatMetadata = {
 }
 
 export type Member = {
-    id: number;
+    members_id: number;
     name: string;
 }
 
 export type MessageProps = {
     text: string;
     senderName: string;
+    senderId?: number;
     timestamp: Date;
 };
 
 export type ChatPreview = {
     id: number;
     name: string;
+}
+
+export type LoginSignupReturnProps = {
+    displayName: string;
+    id: number;
+}
+
+export type User = {
+    id: number;
+    username: string;
 }

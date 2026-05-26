@@ -9,8 +9,7 @@ import Sidebar from "../sidebar/Sidebar.tsx";
 import * as React from "react";
 import ListItemButton from "@mui/material/ListItemButton";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import type {ChatProps, ChatMessage} from "../assets/Props.tsx";
-import {useEffect} from "react";
+import type {ChatProps, User} from "../assets/Props.tsx";
 import {get, post} from "../api/api.ts";
 
 const drawerWidth = 240;
@@ -30,15 +29,15 @@ export default function Homescreen() {
         },
         "members": [
             {
-                "id": 0,
+                "members_id": 0,
                 "name": "hans"
             },
             {
-                "id": 1,
+                "members_id": 1,
                 "name": "maria"
             },
             {
-                "id": 2,
+                "members_id": 2,
                 "name": "peter"
             }
         ],
@@ -76,9 +75,16 @@ export default function Homescreen() {
         ]
     });
     const [chats, setChats] = React.useState<ChatSummery[]>([]);
+    const [user, setUser] = React.useState<User>();
+
+    async function fetchUser(){
+        const user = await get("http://localhost:8080/user", true);
+        setUser({id: user.id, username: user.username});
+    }
 
     async function sendMessage(message:string){
         setCurrentChat( await post(`http://localhost:8080/chat/sendMessage`, {"chatId": currentChat.chatId, "text": message}, true));
+        console.log(currentChat);
     }
 
     async function changeChat(chatId:number){
@@ -96,12 +102,8 @@ export default function Homescreen() {
                 name: "chat9",
                 members: [
                     {
-                        members_id: 13,
-                        name: "test2",
-                    },
-                    {
                         members_id: 1,
-                        name: "maria",
+                        name: "cyril",
                     },
                 ],
             }),
@@ -123,6 +125,7 @@ export default function Homescreen() {
     }
 
     React.useEffect(() => {
+        fetchUser();
         addChat();
         fetchChats();
     }, []);

@@ -26,7 +26,7 @@ function Chat({ chat, sendMessage }: input) {
                         {chat?.messages?.map((message) => (
                             <Message
                                 text={message.text}
-                                senderName={chat?.members?.find(member => member.id === parseInt(message.senderId))?.name || "Unknown"}
+                                senderName={chat?.members?.find(member => member.members_id === parseInt(message.senderId))?.name || "Unknown"}
                                 timestamp={message.timestamp}
                             />
                         ))}
