@@ -10,17 +10,12 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import MuiCard from '@mui/material/Card';
-import {styled} from '@mui/material/styles';
-import {post, get} from '../api/api.ts'
+import { styled } from '@mui/material/styles';
+import type { RegisterRequest } from "../types/authorization.ts";
+import { useState } from "react";
+import { register } from "../api/authorization/sign-up.ts";
 
-type NewUser = {
-    displayName: string;
-    eMail: string;
-    password: string;
-};
-
-
-const Card = styled(MuiCard)(({theme}) => ({
+const Card = styled(MuiCard)(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
     alignSelf: 'center',
@@ -39,7 +34,7 @@ const Card = styled(MuiCard)(({theme}) => ({
     }),
 }));
 
-const SignUpContainer = styled(Stack)(({theme}) => ({
+const SignUpContainer = styled(Stack)(({ theme }) => ({
     height: 'calc((1 - var(--template-frame-height, 0)) * 100dvh)',
     minHeight: '100%',
     padding: theme.spacing(2),
@@ -63,21 +58,23 @@ const SignUpContainer = styled(Stack)(({theme}) => ({
 }));
 
 export default function SignUp() {
-    const [emailError, setEmailError] = React.useState(false);
-    const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
-    const [passwordError, setPasswordError] = React.useState(false);
-    const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
-    const [nameError, setNameError] = React.useState(false);
-    const [nameErrorMessage, setNameErrorMessage] = React.useState('');
+    // Errors
+    const [emailError, setEmailError] = useState(false);
+    const [emailErrorMessage, setEmailErrorMessage] = useState('');
+    const [passwordError, setPasswordError] = useState(false);
+    const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
+    const [nameError, setNameError] = useState(false);
+    const [nameErrorMessage, setNameErrorMessage] = useState('');
+
+    // Data
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [displayName, setDisplayName] = useState('');
 
     const validateInputs = () => {
-        const email = document.getElementById('email') as HTMLInputElement;
-        const password = document.getElementById('password') as HTMLInputElement;
-        const name = document.getElementById('name') as HTMLInputElement;
-
         let isValid = true;
 
-        if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
+        if (!email || !/\S+@\S+\.\S+/.test(email)) {
             setEmailError(true);
             setEmailErrorMessage('Please enter a valid email address.');
             isValid = false;
@@ -86,7 +83,7 @@ export default function SignUp() {
             setEmailErrorMessage('');
         }
 
-        if (!password.value || password.value.length < 6) {
+        if (!password || password.length < 6) {
             setPasswordError(true);
             setPasswordErrorMessage('Password must be at least 6 characters long.');
             isValid = false;
@@ -95,8 +92,9 @@ export default function SignUp() {
             setPasswordErrorMessage('');
         }
 
-        if (!name.value || name.value.length < 1) {
+        if (!displayName.trim()) {
             setNameError(true);
+
             setNameErrorMessage('Name is required.');
             isValid = false;
         } else {
@@ -107,51 +105,53 @@ export default function SignUp() {
         return isValid;
     };
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        if (nameError || emailError || passwordError) {
-            event.preventDefault();
-            return;
-        }
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        const data = new FormData(event.currentTarget);
-
-        const user: NewUser = {
-            displayName: data.get('name') as string,
-            eMail: data.get('email') as string,
-            password: data.get('password') as string,
+        if (!validateInputs()) {
+            return;
         }
 
-        xy(user)
+        const user: RegisterRequest = {
+            displayName,
+            eMail: email,
+            password,
+        };
+
+        await register(user);
+
+        //TODO: Navigate to the next page
     };
-
-    async function xy(user: NewUser) {
-
-
-        await post("http://localhost:8080/user", user, true)
-
-        await get("http://localhost:8080/user", true)
-    }
 
     return (
         <>
-            <CssBaseline enableColorScheme/>
-            <SignUpContainer direction="column" justifyContent="space-between">
+            <CssBaseline enableColorScheme />
+
+            <SignUpContainer direction="column">
                 <Card variant="outlined">
                     <Typography
                         component="h1"
                         variant="h4"
-                        sx={{width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)'}}
+                        sx={{
+                            width: '100%',
+                            fontSize: 'clamp(2rem, 10vw, 2.15rem)',
+                        }}
                     >
                         Sign up
                     </Typography>
+
                     <Box
                         component="form"
                         onSubmit={handleSubmit}
-                        sx={{display: 'flex', flexDirection: 'column', gap: 2}}
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 2,
+                        }}
                     >
                         <FormControl>
                             <FormLabel htmlFor="name">Full name</FormLabel>
+
                             <TextField
                                 autoComplete="name"
                                 name="name"
@@ -162,10 +162,13 @@ export default function SignUp() {
                                 error={nameError}
                                 helperText={nameErrorMessage}
                                 color={nameError ? 'error' : 'primary'}
+                                onChange={(e) => setDisplayName(e.target.value)}
                             />
                         </FormControl>
+
                         <FormControl>
                             <FormLabel htmlFor="email">Email</FormLabel>
+
                             <TextField
                                 required
                                 fullWidth
@@ -176,11 +179,14 @@ export default function SignUp() {
                                 variant="outlined"
                                 error={emailError}
                                 helperText={emailErrorMessage}
-                                color={passwordError ? 'error' : 'primary'}
+                                color={emailError ? 'error' : 'primary'}
+                                onChange={(e) => setEmail(e.target.value)}
                             />
                         </FormControl>
+
                         <FormControl>
                             <FormLabel htmlFor="password">Password</FormLabel>
+
                             <TextField
                                 required
                                 fullWidth
@@ -193,27 +199,38 @@ export default function SignUp() {
                                 error={passwordError}
                                 helperText={passwordErrorMessage}
                                 color={passwordError ? 'error' : 'primary'}
+                                onChange={(e) => setPassword(e.target.value)}
                             />
                         </FormControl>
+
                         <Button
                             type="submit"
                             fullWidth
                             variant="contained"
-                            onClick={validateInputs}
                         >
                             Sign up
                         </Button>
                     </Box>
+
                     <Divider>
-                        <Typography sx={{color: 'text.secondary'}}>or</Typography>
+                        <Typography sx={{ color: 'text.secondary' }}>
+                            or
+                        </Typography>
                     </Divider>
-                    <Box sx={{display: 'flex', flexDirection: 'column', gap: 2}}>
-                        <Typography sx={{textAlign: 'center'}}>
+
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 2,
+                        }}
+                    >
+                        <Typography sx={{ textAlign: 'center' }}>
                             Already have an account?{' '}
                             <Link
                                 href="/sign-in/"
                                 variant="body2"
-                                sx={{alignSelf: 'center'}}
+                                sx={{ alignSelf: 'center' }}
                             >
                                 Sign in
                             </Link>
