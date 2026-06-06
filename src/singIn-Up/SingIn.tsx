@@ -1,9 +1,6 @@
-import * as React from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
 import CssBaseline from '@mui/material/CssBaseline';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import Divider from '@mui/material/Divider';
 import FormLabel from '@mui/material/FormLabel';
 import FormControl from '@mui/material/FormControl';
@@ -12,14 +9,13 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import MuiCard from '@mui/material/Card';
-import {styled} from '@mui/material/styles';
-import {post} from '../api/api.ts'
-import type {LoginSignupReturnProps} from "../assets/Props.tsx";
+import { styled } from '@mui/material/styles';
 import { useNavigate } from "react-router-dom";
-import {LoginOutlined} from "@mui/icons-material";
+import { useState } from "react";
+import { login } from "../api/authorization/login.ts";
+import type { LoginRequest } from "../types/authorization.ts";
 
-
-const Card = styled(MuiCard)(({theme}) => ({
+const Card = styled(MuiCard)(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
     alignSelf: 'center',
@@ -38,7 +34,7 @@ const Card = styled(MuiCard)(({theme}) => ({
     }),
 }));
 
-const SignInContainer = styled(Stack)(({theme}) => ({
+const SignInContainer = styled(Stack)(({ theme }) => ({
     height: 'calc((1 - var(--template-frame-height, 0)) * 100dvh)',
     minHeight: '100%',
     padding: theme.spacing(2),
@@ -61,57 +57,23 @@ const SignInContainer = styled(Stack)(({theme}) => ({
     },
 }));
 
-type UserCredentials = {
-    eMail: string;
-    password: string;
-};
-
 export default function SignIn() {
-    const [emailError, setEmailError] = React.useState(false);
-    const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
-    const [passwordError, setPasswordError] = React.useState(false);
-    const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
-    const [open, setOpen] = React.useState(false);
     const navigate = useNavigate();
 
+    // Errors
+    const [emailError, setEmailError] = useState(false);
+    const [emailErrorMessage, setEmailErrorMessage] = useState('');
+    const [passwordError, setPasswordError] = useState(false);
+    const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
 
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
-
-    const handleClose = () => {
-        setOpen(false);
-    };
-
-    async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-        if (emailError || passwordError) {
-            event.preventDefault();
-            return;
-        }
-        event.preventDefault();
-        const data = new FormData(event.currentTarget);
-
-        const credentials: UserCredentials = {
-            eMail: data.get('email') as string,
-            password: data.get('password') as string,
-        };
-
-        await post("http://localhost:8080/user/logout", null, false)
-
-        const user: LoginSignupReturnProps = await post("http://localhost:8080/user/login", credentials, false)
-
-        sessionStorage.setItem("displayName", JSON.stringify(user.displayName));
-        sessionStorage.setItem("userId", JSON.stringify(user.id));
-        navigate("/home");
-    };
+    // Data
+    const [eMail, setEmail] = useState('');
+    const [password, setPassword] = useState('');
 
     const validateInputs = () => {
-        const email = document.getElementById('email') as HTMLInputElement;
-        const password = document.getElementById('password') as HTMLInputElement;
-
         let isValid = true;
 
-        if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
+        if (!eMail || !/\S+@\S+\.\S+/.test(eMail)) {
             setEmailError(true);
             setEmailErrorMessage('Please enter a valid email address.');
             isValid = false;
@@ -120,7 +82,7 @@ export default function SignIn() {
             setEmailErrorMessage('');
         }
 
-        if (!password.value || password.value.length < 6) {
+        if (!password || password.length < 6) {
             setPasswordError(true);
             setPasswordErrorMessage('Password must be at least 6 characters long.');
             isValid = false;
@@ -132,18 +94,47 @@ export default function SignIn() {
         return isValid;
     };
 
+    async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+        event.preventDefault();
+
+        if (!validateInputs()) {
+            return;
+        }
+
+        const loginData: LoginRequest = {
+            eMail,
+            password,
+        };
+
+        const user = await login(loginData);
+
+        if ("displayName" in user && "userId" in user) {
+            sessionStorage.setItem("displayName", JSON.stringify(user.displayName));
+            sessionStorage.setItem("userId", JSON.stringify(user.id));
+        }else{
+            return;
+        }
+
+        navigate("/home");
+    }
+
     return (
         <>
-            <CssBaseline enableColorScheme/>
-            <SignInContainer direction="column" justifyContent="space-between">
+            <CssBaseline enableColorScheme />
+
+            <SignInContainer direction="column">
                 <Card variant="outlined">
                     <Typography
                         component="h1"
                         variant="h4"
-                        sx={{width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)'}}
+                        sx={{
+                            width: '100%',
+                            fontSize: 'clamp(2rem, 10vw, 2.15rem)',
+                        }}
                     >
                         Sign in
                     </Typography>
+
                     <Box
                         component="form"
                         onSubmit={handleSubmit}
@@ -157,6 +148,7 @@ export default function SignIn() {
                     >
                         <FormControl>
                             <FormLabel htmlFor="email">Email</FormLabel>
+
                             <TextField
                                 error={emailError}
                                 helperText={emailErrorMessage}
@@ -170,10 +162,13 @@ export default function SignIn() {
                                 fullWidth
                                 variant="outlined"
                                 color={emailError ? 'error' : 'primary'}
+                                onChange={(e) => setEmail(e.target.value)}
                             />
                         </FormControl>
+
                         <FormControl>
                             <FormLabel htmlFor="password">Password</FormLabel>
+
                             <TextField
                                 error={passwordError}
                                 helperText={passwordErrorMessage}
@@ -182,34 +177,41 @@ export default function SignIn() {
                                 type="password"
                                 id="password"
                                 autoComplete="current-password"
-                                autoFocus
+
+                                // CHANGE: zweites autoFocus entfernt
+
                                 required
                                 fullWidth
                                 variant="outlined"
                                 color={passwordError ? 'error' : 'primary'}
+                                onChange={(e) => setPassword(e.target.value)}
                             />
                         </FormControl>
-                        <FormControlLabel
-                            control={<Checkbox value="remember" color="primary"/>}
-                            label="Remember me"
-                        />
+
                         <Button
                             type="submit"
                             fullWidth
                             variant="contained"
-                            onClick={validateInputs}
                         >
                             Sign in
                         </Button>
                     </Box>
+
                     <Divider>or</Divider>
-                    <Box sx={{display: 'flex', flexDirection: 'column', gap: 2}}>
-                        <Typography sx={{textAlign: 'center'}}>
+
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 2,
+                        }}
+                    >
+                        <Typography sx={{ textAlign: 'center' }}>
                             Don&apos;t have an account?{' '}
                             <Link
                                 href="/sign-up/"
                                 variant="body2"
-                                sx={{alignSelf: 'center'}}
+                                sx={{ alignSelf: 'center' }}
                             >
                                 Sign up
                             </Link>
