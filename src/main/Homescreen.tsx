@@ -11,6 +11,7 @@ import ListItemButton from "@mui/material/ListItemButton";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import type {ChatProps} from "../assets/Props.tsx";
 import {get, post} from "../api/api.ts";
+import AddChat from "../addChat/AddChat.tsx";
 
 const drawerWidth = 240;
 
@@ -20,6 +21,7 @@ type ChatSummery = {
 }
 
 export default function Homescreen() {
+    const [addChat, setAddChat] = React.useState(false);
     const [currentChatId, setCurrentChatId] = React.useState(1);
     //TODO: only for testing if no chat is available, remove it later, add UI to create new chat and add members to it
     const [currentChat, setCurrentChat] = React.useState<ChatProps>({
@@ -90,27 +92,7 @@ export default function Homescreen() {
         setCurrentChat(await get(`http://localhost:8080/chat?chat-id=${chatId}`, true));
     }
 
-    //TODO: remove this function, only for testing, add UI to create new chat and add members to it
-    async function addChat(){
-        await fetch("http://localhost:8080/chat", {
-            method: "POST",
-            credentials: "include",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                name: "chat9",
-                members: [
-                    {
-                        members_id: 1,
-                        name: "cyril",
-                    },
-                ],
-            }),
-        });
 
-        fetchChats();
-    }
 
     async function fetchChats() {
         const chatsSummaries = await get("http://localhost:8080/chat/all-metadata", true);
@@ -119,7 +101,6 @@ export default function Homescreen() {
 
     React.useEffect(() => {
         fetchUser();
-        addChat();
         fetchChats();
     }, []);
 
@@ -152,8 +133,16 @@ export default function Homescreen() {
                     currentChatId={currentChatId}
                     chats={chats}
                     changeChat={changeChat}
+                    setAddChat={setAddChat}
                 />
             </Drawer>
+            {addChat && (
+                <AddChat
+                    currentUser={user}
+                    open={addChat}
+                    setOpen={setAddChat}
+                />
+            )}            
             <Box sx={{flexGrow: 1, p:0, mt: "6vh", height: "94vh", width: "100%", justifyContent: "flex-end", overflow: "hidden"}}>
                 <Chat chat={{...currentChat}} sendMessage={sendMessage}/>
             </Box>

@@ -8,12 +8,15 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import ChatIcon from '@mui/icons-material/Chat';
 import type {ChatPreview} from "../assets/Props.tsx";
+import {Button} from "@mui/material";
+import AddIcon from '@mui/icons-material/Add';
 
 type Sidebar = {
     chats: ChatPreview[];
     currentChatId: number;
     setCurrentChatId: React.Dispatch<React.SetStateAction<number>>;
     changeChat: (chatId: number) => void;
+    setAddChat: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 
@@ -25,22 +28,33 @@ function Sidebar(sidebar: Sidebar) {
     }
 
     return (
-        <Box>
-            <Toolbar />
-            <Box sx={{ overflow: 'auto' }}>
+        <Box sx={{display: 'flex', flexDirection: 'column', height: '100vh'}}>
+
+            <Toolbar/>
+            <Box sx={{overflow: 'auto', flex: 1}}>
                 <List>
                     {sidebar.chats.map((metadata) => (
                         <ListItem key={metadata.id} disablePadding>
                             <ListItemButton selected={sidebar.currentChatId === metadata.id}
                                             onClick={() => handleChatClick(metadata.id)}>
                                 <ListItemIcon>
-                                    <ChatIcon />
+                                    <ChatIcon/>
                                 </ListItemIcon>
-                                <ListItemText primary={metadata.name} />
+                                <ListItemText primary={metadata.name}/>
                             </ListItemButton>
                         </ListItem>
                     ))}
                 </List>
+            </Box>
+            <Box sx={{width: "100%", height: '7vh', padding: 1}}>
+                <Button
+                    sx={{width: "100%", height: '100%'}}
+                    variant="contained"
+                    startIcon={<AddIcon/>}
+                    onClick={() => sidebar.setAddChat(true)}
+                >
+                    Add Chat
+                </Button>
             </Box>
         </Box>
     );
