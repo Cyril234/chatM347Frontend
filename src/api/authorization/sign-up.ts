@@ -1,9 +1,10 @@
 import type {RegisterRequest} from "../../types/authorization.ts";
+import {apiUrl} from "../config.ts";
 
 export async function register(body: RegisterRequest) {
     let response: Response;
     try {
-        response = await fetch('http://localhost:8080/user', {
+        response = await fetch(apiUrl('/user'), {
             method: "POST",
             credentials: "include",
             headers: {

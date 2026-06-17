@@ -45,4 +45,3 @@ export default function Message({ text, senderName }: MessageProps) {
         </Box>
     );
 }
-

@@ -1,7 +1,9 @@
+import {apiUrl} from "../config.ts";
+
 export async function logout() {
     let response: Response;
     try {
-        response = await fetch('http://localhost:8080/user/logout', {
+        response = await fetch(apiUrl('/user/logout'), {
             method: "POST",
             credentials: "include",
             headers: {
@@ -11,8 +13,6 @@ export async function logout() {
         if (!response.ok) {
             console.error("Error in response: " + await response.json());
         }
-        sessionStorage.removeItem("userId");
-        sessionStorage.removeItem("displayName");
         return await response.json();
     } catch (error) {
         console.error("Error:", error);

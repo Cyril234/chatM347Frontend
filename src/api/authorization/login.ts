@@ -1,9 +1,10 @@
 import type {LoginRequest} from "../../types/authorization.ts";
+import {apiUrl} from "../config.ts";
 
 export async function login(body: LoginRequest) {
     let response: Response;
     try {
-        response = await fetch('http://localhost:8080/user/login', {
+        response = await fetch(apiUrl('/user/login'), {
             method: "POST",
             credentials: "include",
             headers: {

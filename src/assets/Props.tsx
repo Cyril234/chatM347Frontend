@@ -1,5 +1,5 @@
 export type ChatProps = {
-    chatId?: number;
+    chatId?: string;
     meta: ChatMetadata;
     members: Member[];
     messages: ChatMessage[];
@@ -13,7 +13,7 @@ export type ChatMessage = {
 };
 
 export type ChatMetadata = {
-    chatId?: number;
+    chatId?: string;
     id?: number;
     name: string;
     createdAt: Date;
@@ -30,18 +30,3 @@ export type MessageProps = {
     senderId?: number;
     timestamp: Date;
 };
-
-export type ChatPreview = {
-    id: number;
-    name: string;
-}
-
-export type LoginSignupReturnProps = {
-    displayName: string;
-    id: number;
-}
-
-export type User = {
-    id: number;
-    username: string;
-}

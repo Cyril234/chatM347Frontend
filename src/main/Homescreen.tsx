@@ -11,107 +11,49 @@ import ListItemButton from "@mui/material/ListItemButton";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import type {ChatProps} from "../assets/Props.tsx";
 import {get, post} from "../api/api.ts";
+import {apiUrl} from "../api/config.ts";
 import AddChat from "../addChat/AddChat.tsx";
 
 const drawerWidth = 240;
 
-type ChatSummery = {
-    id: number;
-    name: string;
-}
-
 export default function Homescreen() {
     const [addChat, setAddChat] = React.useState(false);
-    const [currentChatId, setCurrentChatId] = React.useState(1);
-    //TODO: only for testing if no chat is available, remove it later, add UI to create new chat and add members to it
-    const [currentChat, setCurrentChat] = React.useState<ChatProps>({
-        "chatId": 0,
-        "meta": {
-            "name": "Chat Room 1",
-            "createdAt": new Date("2024-06-01T09:00:00Z")
-        },
-        "members": [
-            {
-                "members_id": 0,
-                "name": "hans"
-            },
-            {
-                "members_id": 1,
-                "name": "maria"
-            },
-            {
-                "members_id": 2,
-                "name": "peter"
-            }
-        ],
-        "messages": [
-            {
-                "id": 0,
-                "text": "Hello, how are you?",
-                "senderId": "0",
-                "timestamp": new Date("2024-06-01T10:00:00Z")
-            },
-            {
-                "id": 1,
-                "text": "I'm good, thanks! How about you?",
-                "senderId": "1",
-                "timestamp": new Date("2024-06-01T10:01:00Z")
-            },
-            {
-                "id": 2,
-                "text": "Doing well, just working on a project.",
-                "senderId": "0",
-                "timestamp": new Date("2024-06-01T10:02:00Z")
-            },
-            {
-                "id": 3,
-                "text": "That's great! Let me know if you need any help.",
-                "senderId": "1",
-                "timestamp": new Date("2024-06-01T10:03:00Z")
-            },
-            {
-                "id": 3,
-                "text": "Peter",
-                "senderId": "2",
-                "timestamp": new Date("2024-06-01T10:03:00Z")
-            }
-        ]
-    });
-    const [chats, setChats] = React.useState<ChatSummery[]>([]);
+    const [currentChatId, setCurrentChatId] = React.useState("");
+    const [currentChat, setCurrentChat] = React.useState<ChatProps>();
+    const [user, setUser] = React.useState({id: 0, eMail: "", name: ""});
 
-    async function fetchUser(){
-        const user = await get("http://localhost:8080/user", true);
-        console.log(user)
+    async function fetchUser() {
+        const fetchUser = await get(apiUrl("/user"));
+        setUser({id: fetchUser.id, eMail: "", name: fetchUser.username});
     }
 
-    async function sendMessage(message:string){
-        setCurrentChat( await post(`http://localhost:8080/chat/sendMessage`, {"chatId": currentChat.chatId, "text": message}, true));
+    async function sendMessage(message: string) {
+        if (currentChat) {
+            setCurrentChat(await post(apiUrl(`/chat/sendMessage`), {
+                "chatId": currentChat.chatId,
+                "text": message
+            }));
+        } else {
+            console.error("No chat selected");
+        }
     }
 
-    async function changeChat(chatId:number){
-        setCurrentChat(await get(`http://localhost:8080/chat?chat-id=${chatId}`, true));
-    }
-
-
-
-    async function fetchChats() {
-        const chatsSummaries = await get("http://localhost:8080/chat/all-metadata", true);
-        setChats(chatsSummaries);
+    async function changeChat(chatId: string) {
+        setCurrentChat(await get(apiUrl(`/chat?chat-id=${chatId}`)));
     }
 
     React.useEffect(() => {
         fetchUser();
-        fetchChats();
     }, []);
 
 
     return (
         <Box sx={{display: 'flex', height: "100%"}}>
             <CssBaseline/>
-            <AppBar position="fixed" sx={{zIndex: (theme) => theme.zIndex.drawer + 1, height: "6vh"}}>
-                <Toolbar sx={{display: "flex" , justifyContent: "space-between" }}>
+            <AppBar position="fixed" sx={{zIndex: (theme) => theme.zIndex.drawer + 1, height: "4em"}}>
+                <Toolbar sx={{display: "flex", justifyContent: "space-between"}}>
                     <Typography variant="h6" noWrap component="div">
-                        Clipped drawer
+                        Chat M347
                     </Typography>
                     <Box>
                         <ListItemButton>
@@ -131,9 +73,9 @@ export default function Homescreen() {
                 <Sidebar
                     setCurrentChatId={setCurrentChatId}
                     currentChatId={currentChatId}
-                    chats={chats}
                     changeChat={changeChat}
                     setAddChat={setAddChat}
+                    currentUserId={user.id}
                 />
             </Drawer>
             {addChat && (
@@ -142,10 +84,37 @@ export default function Homescreen() {
                     open={addChat}
                     setOpen={setAddChat}
                 />
-            )}            
-            <Box sx={{flexGrow: 1, p:0, mt: "6vh", height: "94vh", width: "100%", justifyContent: "flex-end", overflow: "hidden"}}>
-                <Chat chat={{...currentChat}} sendMessage={sendMessage}/>
-            </Box>
+            )}
+            {
+                currentChat != null ? (
+                    <Box
+                        sx={{
+                            flexGrow: 1,
+                            p: 0,
+                            mt: "6vh",
+                            height: "94vh",
+                            width: "100%",
+                            justifyContent: "flex-end",
+                            overflow: "hidden",
+                        }}
+                    >
+                        <Chat currentUserId={user.id} chatInput={{...currentChat}} sendMessage={sendMessage}/>
+                    </Box>
+                ) : (
+                    <Box
+                        sx={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            height: "100vh",
+                            width: "100%",
+                        }}
+                    >
+                        <h3>Please select or add a chat</h3>
+                    </Box>
+                )
+            }
+
         </Box>
     );
 }

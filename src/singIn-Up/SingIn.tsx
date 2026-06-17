@@ -106,14 +106,7 @@ export default function SignIn() {
             password,
         };
 
-        const user = await login(loginData);
-
-        if ("displayName" in user && "userId" in user) {
-            sessionStorage.setItem("displayName", JSON.stringify(user.displayName));
-            sessionStorage.setItem("userId", JSON.stringify(user.id));
-        }else{
-            return;
-        }
+        await login(loginData);
 
         navigate("/home");
     }
@@ -177,8 +170,6 @@ export default function SignIn() {
                                 type="password"
                                 id="password"
                                 autoComplete="current-password"
-
-                                // CHANGE: zweites autoFocus entfernt
 
                                 required
                                 fullWidth

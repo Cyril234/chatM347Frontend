@@ -14,6 +14,7 @@ import { styled } from '@mui/material/styles';
 import type { RegisterRequest } from "../types/authorization.ts";
 import { useState } from "react";
 import { register } from "../api/authorization/sign-up.ts";
+import {useNavigate} from "react-router-dom";
 
 const Card = styled(MuiCard)(({ theme }) => ({
     display: 'flex',
@@ -59,6 +60,7 @@ const SignUpContainer = styled(Stack)(({ theme }) => ({
 
 export default function SignUp() {
     // Errors
+    const navigate = useNavigate();
     const [emailError, setEmailError] = useState(false);
     const [emailErrorMessage, setEmailErrorMessage] = useState('');
     const [passwordError, setPasswordError] = useState(false);
@@ -120,7 +122,7 @@ export default function SignUp() {
 
         await register(user);
 
-        //TODO: Navigate to the next page
+        navigate("/home");
     };
 
     return (

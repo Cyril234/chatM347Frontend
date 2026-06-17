@@ -3,6 +3,7 @@ import TextField from "@mui/material/TextField";
 import ListItemText from "@mui/material/ListItemText";
 import * as React from "react";
 import {get} from "../api/api.ts";
+import {apiUrl} from "../api/config.ts";
 import DeleteIcon from '@mui/icons-material/Delete';
 import Box from "@mui/material/Box";
 
@@ -30,7 +31,7 @@ function AddChat({ currentUser, open, setOpen }: input) {
 
     React.useEffect(() => {
         async function fetchUsers() {
-            const fetchedNames = await get("http://localhost:8080/user/all-users", false);
+            const fetchedNames = await get(apiUrl("/user/all-users"));
             setAllUser(fetchedNames.filter((n: user) => n.id !== currentUser?.id));
         }
 
@@ -62,15 +63,14 @@ function AddChat({ currentUser, open, setOpen }: input) {
         const members = chatUser.map(u => {
             return {
                 members_id: u.id,
-                name: u.eMail,
+                name: u.name,
             }
         });
         members.push({
             members_id: currentUser.id,
-            name: currentUser.eMail,
+            name: currentUser.name,
         });
-        console.log(members)
-        await fetch("http://localhost:8080/chat", {
+        await fetch(apiUrl("/chat"), {
             method: "POST",
             credentials: "include",
             headers: {
