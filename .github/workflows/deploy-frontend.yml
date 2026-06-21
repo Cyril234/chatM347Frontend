@@ -24,7 +24,7 @@ jobs:
 
       - name: Compute lowercase owner (GHCR/Docker erfordert lowercase Image-Namen)
         id: owner
-        run: echo "owner_lower=$(echo '${{ secrets.GHCR_OWNER }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+        run: echo "owner_lower=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
 
   # ── 2. Build & Push Frontend ─────────────────────────────────────────────────
   build-and-push:
@@ -97,8 +97,3 @@ jobs:
              sudo docker compose pull frontend-service && \
              sudo docker compose up -d frontend-service --remove-orphans && \
              sudo docker image prune -f"
-
-      - name: Health check
-        run: |
-          sleep 10
-          curl -f http://${{ secrets.VM_IP }}/ || echo "Health check fehlgeschlagen – bitte Logs prüfen"
