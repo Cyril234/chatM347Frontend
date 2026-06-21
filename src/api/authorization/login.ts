@@ -12,10 +12,18 @@ export async function login(body: LoginRequest) {
             },
             body: JSON.stringify(body),
         });
+
         if (!response.ok) {
-            console.error("Error in response: " + await response.json());
+            const errorData = await response.json();
+            console.error("Error in response:", errorData);
+            return null;
         }
-        return await response.json();
+
+        const data = await response.json();
+
+        window.location.href = "http://localhost:5173/home";
+
+        return data;
     } catch (error) {
         console.error("Error:", error);
     }

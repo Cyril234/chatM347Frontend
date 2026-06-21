@@ -12,10 +12,17 @@ export async function register(body: RegisterRequest) {
             },
             body: JSON.stringify(body),
         });
+
         if (!response.ok) {
             console.error("Error in response.");
+            return null;
         }
-        return await response.json();
+
+        const data = await response.json();
+
+        window.location.href = "http://localhost:5173/home";
+
+        return data;
     } catch (error) {
         console.error("Error:", error);
     }
