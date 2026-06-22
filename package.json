@@ -1,7 +1,7 @@
 {
-  "name": "template-frontend",
+  "name": "chattrix-frontend",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -14,12 +14,9 @@
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^9.0.0",
     "@mui/material": "^9.0.0",
-    "@mui/x-chat": "^9.0.0-alpha.2",
-    "@stomp/stompjs": "^7.3.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "react-router-dom": "^7.13.0",
-    "stompjs": "^2.3.3"
+    "react-router-dom": "^7.13.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
