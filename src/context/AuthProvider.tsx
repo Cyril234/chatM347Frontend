@@ -11,7 +11,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<UserData | null>(null)
   const [status, setStatus] = useState<AuthStatus>('loading')
 
-  // Aktuellen User laden; dient zugleich als Session-Check.
   const loadUser = useCallback(async (): Promise<boolean> => {
     const res = await getCurrentUser()
     if (res.success && res.data) {
@@ -24,7 +23,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return false
   }, [])
 
-  // Session beim Start pruefen (einmalig). setState erfolgt erst im async Callback.
   useEffect(() => {
     let active = true
     void getCurrentUser().then((res) => {
@@ -56,7 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     async (payload: RegisterPayload): Promise<AuthResult> => {
       const res = await registerRequest(payload)
       if (!res.success) return { success: false, message: res.message }
-      // Das Backend setzt bei der Registrierung keine Cookies -> direkt einloggen.
+
       const loginRes = await loginRequest({ email: payload.email, password: payload.password })
       if (loginRes.success) await loadUser()
       return { success: true, message: res.message }

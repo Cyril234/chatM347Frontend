@@ -1,4 +1,4 @@
-// DTOs gemaess Backend-Vertrag (shared-Modul).
+
 
 export type ApiResponse<T> = {
   success: boolean
@@ -8,8 +8,6 @@ export type ApiResponse<T> = {
 
 export type ChatType = 'PRIVATE' | 'GROUP'
 
-// java.util.Date wird je nach Service als ISO-String oder Epoch-Millis serialisiert
-// -> defensiv beides zulassen, immer via new Date(value) parsen.
 export type BackendDate = string | number
 
 export type UserData = {
@@ -39,6 +37,6 @@ export type MessageResponse = {
   senderUuid: string
   content: string
   createdAt: BackendDate
-  // Bei Echtzeit-Events (MessageSentEvent) null -> Sendername selbst aufloesen.
+
   username: string | null
 }

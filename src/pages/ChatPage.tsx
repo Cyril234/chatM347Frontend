@@ -154,7 +154,7 @@ export default function ChatPage() {
               }}
             >
               <ForumIcon sx={{ fontSize: 64, opacity: 0.4 }} />
-              <Typography>Waehle links einen Chat oder erstelle einen neuen.</Typography>
+              <Typography>Wähle links einen Chat oder erstelle einen neuen.</Typography>
             </Stack>
           )}
         </Box>

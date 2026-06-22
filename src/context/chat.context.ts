@@ -15,11 +15,18 @@ export type CreateChatInput = {
   memberUuids: string[]
 }
 
+export type EditChatInput = {
+  chatUuid: string
+  name: string
+  memberUuids: string[]
+}
+
 export type ChatContextValue = {
   state: ChatState
   selectChat: (chatUuid: string) => void
   sendMessage: (content: string) => void
   createChat: (input: CreateChatInput) => void
+  editChat: (input: EditChatInput) => void
   deleteChat: (chat: ChatResponse) => void
   refreshChats: () => void
   usernameOf: (uuid: string) => string

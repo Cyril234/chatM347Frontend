@@ -42,7 +42,7 @@ export default function SignIn() {
   }
 
   return (
-    <AuthLayout title="Anmelden" subtitle="Willkommen zurueck!">
+    <AuthLayout title="Anmelden" subtitle="Willkommen zurück!">
       <Box component="form" onSubmit={handleSubmit} noValidate>
         <Stack spacing={2}>
           {error && <Alert severity="error">{error}</Alert>}

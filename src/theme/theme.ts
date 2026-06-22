@@ -1,7 +1,6 @@
 import { createTheme } from '@mui/material/styles'
 import type { PaletteMode, Theme } from '@mui/material'
 
-// Indigo-basiertes Theme, hell + dunkel. Wird vom ColorModeProvider erzeugt.
 export function createAppTheme(mode: PaletteMode): Theme {
   return createTheme({
     palette: {

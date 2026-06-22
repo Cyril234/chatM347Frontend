@@ -7,9 +7,8 @@ import { parseServerEvent } from '../types/ws.ts'
 import type { OutgoingMessage } from '../types/ws.ts'
 import type { ChatResponse, MessageResponse } from '../types/api.ts'
 import { ChatContext } from './chat.context.ts'
-import type { ChatContextValue, ChatState, CreateChatInput } from './chat.context.ts'
+import type { ChatContextValue, ChatState, CreateChatInput, EditChatInput } from './chat.context.ts'
 
-// Dev-only Diagnose-Logging fuer die WebSocket-Schicht (im Browser-DevTools sichtbar).
 const DEV = import.meta.env.DEV
 function dlog(...args: unknown[]) {
   if (DEV) console.info('[chat-ws]', ...args)
@@ -77,7 +76,7 @@ function reducer(state: ChatState, action: Action): ChatState {
       }
     case 'ADD_MESSAGE': {
       const msg = action.message
-      // Bei Echtzeit-Nachrichten ohne Username diesen aus der Userliste ergaenzen.
+
       const withName: MessageResponse =
         msg.username == null
           ? { ...msg, username: state.usersByUuid[msg.senderUuid] ?? null }
@@ -119,7 +118,6 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
-  // WebSocket-Lebenszyklus an den Login-Status koppeln.
   useEffect(() => {
     if (status !== 'authed' || !user) {
       shouldConnectRef.current = false
@@ -133,7 +131,6 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     shouldConnectRef.current = true
     let cancelled = false
 
-    // Userliste (UUID -> Username) laden, inkl. eigenem User.
     void getAllUsers().then((res) => {
       if (cancelled || !res.success || !res.data) return
       const map: Record<string, string> = {}
@@ -248,6 +245,18 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     [send],
   )
 
+  const editChat = useCallback(
+    (input: EditChatInput) => {
+      send({
+        type: 'EDIT_CHAT',
+        chatUuid: input.chatUuid,
+        name: input.name,
+        memberUuids: input.memberUuids,
+      })
+    },
+    [send],
+  )
+
   const deleteChat = useCallback(
     (chat: ChatResponse) => {
       send({ type: 'DELETE_CHAT', chatUuid: chat.chatUuid, memberUuids: chat.memberUuids })
@@ -265,8 +274,17 @@ export function ChatProvider({ children }: { children: ReactNode }) {
   )
 
   const value = useMemo<ChatContextValue>(
-    () => ({ state, selectChat, sendMessage, createChat, deleteChat, refreshChats, usernameOf }),
-    [state, selectChat, sendMessage, createChat, deleteChat, refreshChats, usernameOf],
+    () => ({
+      state,
+      selectChat,
+      sendMessage,
+      createChat,
+      editChat,
+      deleteChat,
+      refreshChats,
+      usernameOf,
+    }),
+    [state, selectChat, sendMessage, createChat, editChat, deleteChat, refreshChats, usernameOf],
   )
 
   return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>

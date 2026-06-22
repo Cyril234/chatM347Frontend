@@ -16,9 +16,6 @@ export function formatDateTime(value: BackendDate): string {
   return d.toLocaleString('de-CH', { dateStyle: 'medium', timeStyle: 'short' })
 }
 
-// Anzeigename eines Chats:
-// - GROUP:   gespeicherter Chatname
-// - PRIVATE: Username des anderen Teilnehmers (Fallback: Chatname)
 export function chatDisplayName(
   chat: ChatResponse,
   currentUserUuid: string,
@@ -39,7 +36,6 @@ export function initials(name: string): string {
   return (parts[0][0] + parts[1][0]).toUpperCase()
 }
 
-// Deterministische Farbe aus einem String (fuer Avatare).
 export function colorFromString(value: string): string {
   let hash = 0
   for (let i = 0; i < value.length; i += 1) {

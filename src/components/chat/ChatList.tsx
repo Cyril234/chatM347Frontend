@@ -66,7 +66,7 @@ export default function ChatList({ onNewChat }: { onNewChat: () => void }) {
                       secondary: { noWrap: true },
                     }}
                   />
-                  <Tooltip title="Chat loeschen">
+                  <Tooltip title="Chat löschen">
                     <IconButton
                       edge="end"
                       size="small"
@@ -93,11 +93,11 @@ export default function ChatList({ onNewChat }: { onNewChat: () => void }) {
       </Box>
 
       <Dialog open={toDelete !== null} onClose={() => setToDelete(null)}>
-        <DialogTitle>Chat loeschen?</DialogTitle>
+        <DialogTitle>Chat löschen?</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Der Chat wird fuer <strong>alle Mitglieder</strong> entfernt und alle Nachrichten werden
-            geloescht. Das kann nicht rueckgaengig gemacht werden.
+            Der Chat wird für <strong>alle Mitglieder</strong> entfernt und alle Nachrichten werden
+            gelöscht. Das kann nicht rückgängig gemacht werden.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -110,7 +110,7 @@ export default function ChatList({ onNewChat }: { onNewChat: () => void }) {
               setToDelete(null)
             }}
           >
-            Loeschen
+            Löschen
           </Button>
         </DialogActions>
       </Dialog>

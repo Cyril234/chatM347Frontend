@@ -9,8 +9,6 @@ function rawRequest(path: string, init: RequestInit): Promise<Response> {
   })
 }
 
-// Fuehrt den Request aus. Bei 401 (abgelaufener/fehlender accessToken) wird einmalig
-// ein Token-Refresh versucht und der Request wiederholt.
 async function request<T>(path: string, init: RequestInit): Promise<ApiResponse<T>> {
   let res = await rawRequest(path, init)
 

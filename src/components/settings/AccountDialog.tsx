@@ -40,13 +40,13 @@ export default function AccountDialog({ open, onClose }: { open: boolean; onClos
       await refreshUser()
       setFeedback({ type: 'success', text: 'Benutzername aktualisiert.' })
     } else {
-      setFeedback({ type: 'error', text: res.message || 'Aenderung fehlgeschlagen.' })
+      setFeedback({ type: 'error', text: res.message || 'Änderung fehlgeschlagen.' })
     }
   }
 
   const saveCredential = async () => {
     if (!email && !password) {
-      setFeedback({ type: 'error', text: 'Bitte E-Mail oder Passwort ausfuellen.' })
+      setFeedback({ type: 'error', text: 'Bitte E-Mail oder Passwort ausfüllen.' })
       return
     }
     const err = (email ? emailError(email) : null) ?? (password ? passwordError(password) : null)
@@ -63,7 +63,7 @@ export default function AccountDialog({ open, onClose }: { open: boolean; onClos
       setPassword('')
       setFeedback({ type: 'success', text: 'Zugangsdaten aktualisiert.' })
     } else {
-      setFeedback({ type: 'error', text: res.message || 'Aenderung fehlgeschlagen.' })
+      setFeedback({ type: 'error', text: res.message || 'Änderung fehlgeschlagen.' })
     }
   }
 
@@ -72,9 +72,9 @@ export default function AccountDialog({ open, onClose }: { open: boolean; onClos
     const res = await deleteAccount()
     setBusy(false)
     if (res.success) {
-      await logout() // ProtectedRoute leitet anschliessend auf /sign-in
+      await logout()
     } else {
-      setFeedback({ type: 'error', text: res.message || 'Loeschen fehlgeschlagen.' })
+      setFeedback({ type: 'error', text: res.message || 'Löschen fehlgeschlagen.' })
     }
   }
 
@@ -113,7 +113,7 @@ export default function AccountDialog({ open, onClose }: { open: boolean; onClos
           </Stack>
 
           <Stack spacing={1.5}>
-            <Typography variant="subtitle2">E-Mail / Passwort aendern</Typography>
+            <Typography variant="subtitle2">E-Mail / Passwort ändern</Typography>
             <TextField
               fullWidth
               size="small"
@@ -144,7 +144,7 @@ export default function AccountDialog({ open, onClose }: { open: boolean; onClos
 
           <Stack spacing={1.5}>
             <Typography variant="subtitle2" color="error">
-              Konto loeschen
+              Konto löschen
             </Typography>
             {confirmDelete ? (
               <Alert
@@ -155,12 +155,12 @@ export default function AccountDialog({ open, onClose }: { open: boolean; onClos
                       Abbrechen
                     </Button>
                     <Button color="error" size="small" onClick={removeAccount} disabled={busy}>
-                      Endgueltig loeschen
+                      Endgültig löschen
                     </Button>
                   </>
                 }
               >
-                Konto wirklich unwiderruflich loeschen?
+                Konto wirklich unwiderruflich löschen?
               </Alert>
             ) : (
               <Button
@@ -169,7 +169,7 @@ export default function AccountDialog({ open, onClose }: { open: boolean; onClos
                 sx={{ alignSelf: 'flex-start' }}
                 onClick={() => setConfirmDelete(true)}
               >
-                Konto loeschen
+                Konto löschen
               </Button>
             )}
           </Stack>

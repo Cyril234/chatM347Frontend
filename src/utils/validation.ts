@@ -1,5 +1,4 @@
-// Spiegelt die Backend-Validierung (shared DTOs), damit Eingaben nicht erst
-// serverseitig mit 400 abgelehnt werden.
+
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const PASSWORD_RE = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).*$/
@@ -7,8 +6,8 @@ const USERNAME_RE = /^[a-zA-Z0-9_]+$/
 
 export function emailError(email: string): string | null {
   if (!email) return 'E-Mail darf nicht leer sein.'
-  if (email.length > 255) return 'E-Mail darf hoechstens 255 Zeichen lang sein.'
-  if (!EMAIL_RE.test(email)) return 'Bitte eine gueltige E-Mail-Adresse eingeben.'
+  if (email.length > 255) return 'E-Mail darf höchstens 255 Zeichen lang sein.'
+  if (!EMAIL_RE.test(email)) return 'Bitte eine gültige E-Mail-Adresse eingeben.'
   return null
 }
 

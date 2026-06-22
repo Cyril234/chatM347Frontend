@@ -1,7 +1,5 @@
 import type { ChatResponse, ChatType, MessageResponse } from './api.ts'
 
-// ── Client -> Server ────────────────────────────────────────────────────────
-// Rohe WebSocket-Nachrichten mit Pflichtfeld `type`.
 export type OutgoingMessage =
   | { type: 'CREATE_CHAT'; name: string; chatType: ChatType; memberUuids: string[] }
   | { type: 'GET_CHATS' }
@@ -11,9 +9,6 @@ export type OutgoingMessage =
   | { type: 'EDIT_CHAT'; chatUuid: string; name: string; memberUuids: string[] }
   | { type: 'DELETE_CHAT'; chatUuid: string; memberUuids: string[] }
 
-// ── Server -> Client ────────────────────────────────────────────────────────
-// Die Backend-Events tragen KEIN type-Feld; sie werden anhand ihrer Feld-Form
-// unterschieden (siehe parseServerEvent).
 export type ServerEvent =
   | { kind: 'CHATS'; chats: ChatResponse[] }
   | { kind: 'CHAT_MESSAGES'; chat: ChatResponse; messages: MessageResponse[] }
@@ -30,7 +25,6 @@ export function parseServerEvent(raw: string): ServerEvent | null {
   }
   if (!data || typeof data !== 'object') return null
 
-  // Reihenfolge ist wichtig (manche Events teilen sich Felder).
   if (Array.isArray(data.chats)) {
     return { kind: 'CHATS', chats: data.chats as ChatResponse[] }
   }
@@ -49,7 +43,7 @@ export function parseServerEvent(raw: string): ServerEvent | null {
     }
   }
   if (data.chat && typeof data.chat === 'object') {
-    // ChatReceivedEvent (mit userUuid) ODER ChatEdited/Created (ohne) -> immer upsert.
+
     return { kind: 'CHAT', chat: data.chat as ChatResponse }
   }
   if (typeof data.chatUuid === 'string' && Array.isArray(data.memberUuids)) {

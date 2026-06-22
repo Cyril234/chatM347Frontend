@@ -87,7 +87,7 @@ export default function NewChatDialog({ open, onClose }: { open: boolean; onClos
               onChange={(_e, v) => setDirect(v)}
               getOptionLabel={(o) => o.username}
               isOptionEqualToValue={(o, v) => o.uuid === v.uuid}
-              renderInput={(params) => <TextField {...params} label="Person auswaehlen" autoFocus />}
+              renderInput={(params) => <TextField {...params} label="Person auswählen" autoFocus />}
               noOptionsText="Keine weiteren Nutzer"
             />
           ) : (
